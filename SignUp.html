@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,
+						initial-scale=1.0">
+	<title>SwiftCertify</title>
+	<link rel="stylesheet" href="SignUp.css">
+	<link rel="shortcut icon" href="favicon.ico">
+
+</head>
+
+<body>
+	<header>
+		<h1 class="heading">SwiftCertify</h1>
+		<h3 class="title">Login & Registration Form</h3>
+	</header>
+
+	<!-- container div -->
+	<div class="container">
+
+		<!-- upper button section to select
+			the login or signup form -->
+		<div class="slider"></div>
+		<div class="btn">
+			<button class="login">Login</button>
+			<button class="signup">Signup</button>
+		</div>
+
+		<!-- Form section that contains the
+			login and the signup form -->
+		<div class="form-section">
+
+			<!-- login form -->
+			<div class="login-box">
+				<input type="email" class="email ele"  placeholder="youremail@email.com">
+				<input type="password" class="password ele"  placeholder="password">
+				<button class="clkbtn" type="submit" id="login" value="Login">Login</button>
+			</div>
+
+			<!-- signup form -->
+			<div class="signup-box">
+				<input type="text" class="name ele"  id="name"placeholder="Enter your name">
+				<input type="email" class="email ele" id="email" placeholder="youremail@email.com">
+				<input type="password" class="password ele" id="password" placeholder="password">
+				<input type="password" class="password ele" placeholder="Confirm password">
+				<button class="clkbtn" type="submit" id="sighup" value="sign up">Signup</button>
+			</div>
+		</div>
+	</div>
+	
+</body>
+<script src="slider.js"></script>
+
+
+
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
+  import { getDatabase,set,ref , update} from "https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js";
+  import { getAuth, createUserWithEmailAndPassword ,signInWithEmailAndPassword , onAuthStateChanged} from "https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js";
+
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0-7mfTGtKHP2rbCqqpImKebnR3shD4fM",
+    authDomain: "certifyfinal.firebaseapp.com",
+    databaseURL: "https://certifyfinal-default-rtdb.firebaseio.com",
+    projectId: "certifyfinal",
+    storageBucket: "certifyfinal.appspot.com",
+    messagingSenderId: "432014558292",
+    appId: "1:432014558292:web:b6ba99e28e53a910a799c1"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const database=getDatabase(app);
+  const auth = getAuth();
+
+  document.getElementById('sighup').addEventListener('click', (e) => {
+
+    var name =document.getElementById('name').value
+	var email =document.getElementById('email').value
+	var password =document.getElementById('password').value
+
+
+	createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+
+	set(ref(database,'users/' +user.uid),{
+		name:name,
+		email:email
+	})
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+	alert(errorMessage);
+    // ..
+  });
+})
+
+
+
+document.getElementById('login').addEventListener('click',(e)=>{
+    var email = document.querySelector('.login-box .email').value;
+    var password = document.querySelector('.login-box .password').value;
+
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        const dt = new Date();
+        update(ref(database,'users/' + user.uid),{
+            last_login: name,
+        })
+
+        alert('User logged in!');
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        alert(errorMessage);
+    });
+});
+
+
+
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/firebase.User
+    const uid = user.uid;
+    // ...
+  } else {
+    // User is signed out
+    // ...
+  }
+});
+
+</script>
+
+
+</html>
